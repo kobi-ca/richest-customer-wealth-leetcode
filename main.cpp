@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
+#include "range/v3/all.hpp"
 
 namespace original {
 
@@ -77,6 +78,15 @@ namespace modern {
                                          }); // transform
         }
     }
+
+    namespace sol3 {
+        [[nodiscard]]
+        int maximumWealth(const std::vector<std::vector<int>> &accounts) {
+            auto rng = accounts | ranges::views::transform([](const auto& v)
+                    { return ranges::accumulate(v, 0); });
+            return ranges::max(rng);
+        }
+    }
 } // modern
 
 int main() {
@@ -107,6 +117,12 @@ int main() {
         std::clog << modern::sol2::maximumWealth(v1) << ' '
                   << modern::sol2::maximumWealth(v2) << ' '
                   << modern::sol2::maximumWealth(v3) << '\n';
+    }
+
+    {
+        std::clog << modern::sol3::maximumWealth(v1) << ' '
+                  << modern::sol3::maximumWealth(v2) << ' '
+                  << modern::sol3::maximumWealth(v3) << '\n';
     }
 
     return 0;
