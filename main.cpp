@@ -1,7 +1,12 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
+#include <numeric>
 
 namespace original {
+
+    // const added to the vector params
+
     // Runtime: 18 ms, faster than 5.58% of C++ online submissions for Richest Customer Wealth.
     // Memory Usage: 7.9 MB, less than 16.36% of C++ online submissions for Richest Customer Wealth.
     namespace sol1 {
@@ -47,7 +52,32 @@ namespace original {
             }
         };
     }
-}
+} // original
+
+namespace modern {
+
+    namespace sol1 {
+        [[nodiscard]]
+        int maximumWealth(const std::vector<std::vector<int>> &accounts) {
+            auto max{std::numeric_limits<int>::min()};
+            for(const auto& v : accounts) {
+                max = std::max(max, std::accumulate(v.cbegin(), v.cend(), 0));
+            }
+            return max;
+        }
+    }
+
+    namespace sol2 {
+        [[nodiscard]]
+        int maximumWealth(const std::vector<std::vector<int>> &accounts) {
+            return std::transform_reduce(accounts.cbegin(), accounts.cend(), 0,
+                                         [](const auto max, const auto val) { return std::max(max, val); }, // reduce
+                                         [](const auto &v) {
+                                             return std::accumulate(v.cbegin(), v.cend(), 0);
+                                         }); // transform
+        }
+    }
+} // modern
 
 int main() {
 
@@ -65,6 +95,18 @@ int main() {
         std::clog << original::sol2::Solution{}.maximumWealth(v1) << ' '
                   << original::sol2::Solution{}.maximumWealth(v2) << ' '
                   << original::sol2::Solution{}.maximumWealth(v3) << '\n';
+    }
+
+    {
+        std::clog << modern::sol1::maximumWealth(v1) << ' '
+                  << modern::sol1::maximumWealth(v2) << ' '
+                  << modern::sol1::maximumWealth(v3) << '\n';
+    }
+
+    {
+        std::clog << modern::sol2::maximumWealth(v1) << ' '
+                  << modern::sol2::maximumWealth(v2) << ' '
+                  << modern::sol2::maximumWealth(v3) << '\n';
     }
 
     return 0;
